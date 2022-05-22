@@ -19,20 +19,20 @@ class BlogControllerTest extends TestCase
     public function ブログ情報が表示されているか()
     {
 
-        // User::factory()->create();
+        User::factory()->create();//試しにuser情報挿入できるかをやってみたがデータはいらず。
 
         // $this->seed();
-        DB::table('blogs')->insert([
-            'user_id' => 1,
-            'category_id' => 1,
-            'title' => "title. 1",
-            'price' => 200,
-            'content' => "content . 1"
-        ]);
+        // DB::table('blogs')->insert([
+        //     'user_id' => 1,
+        //     'category_id' => 1,
+        //     'title' => "title. 1",
+        //     'price' => 200,
+        //     'content' => "content . 1"
+        // ]);
 
         $this->get('/api/blog_list')
         ->assertOK()
-            ->assertJson([
+            ->assertJsonFragment([
                 'user_id' => 1,
                 'category_id' => 1,
                 'title' => "title. 1",
