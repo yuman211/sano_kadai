@@ -4,14 +4,18 @@ namespace Tests\Feature\Models;
 
 use App\Models\Blog;
 use App\Models\Category;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Database\Eloquent\Collection;
+use App\Models\Tag;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use App\Models\User;
 use Database\Seeders\BlogsTableSeeder;
 use Database\Seeders\CategoriesTableSeeder;
+use Database\Seeders\TagsTableSeeder;
+use Database\Seeders\BlogsTagsTableSeeder;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Support\Facades\Log;
+
 
 class BlogTest extends TestCase
 {
@@ -22,6 +26,9 @@ class BlogTest extends TestCase
         parent::setUp();
         $this->seed(BlogsTableSeeder::class);
         $this->seed(CategoriesTableSeeder::class);
+        $this->seed(TagsTableSeeder::class);
+        $this->seed(BlogsTagsTableSeeder::class);
+
     }
 
     /**
@@ -42,6 +49,18 @@ class BlogTest extends TestCase
     {
         // $this->seed(CategoriesTableSeeder::class);
         $blog = Blog::find(1)->category;
+        Log::info($blog);
         $this->assertInstanceOf(Category::class,$blog);
+    }
+
+    /**
+     * @test
+     */
+    public function blogのインスタンスにcollectionモデルのインスタンスが紐づいているか()
+    {
+        // $this->seed(CategoriesTableSeeder::class);
+        $blog = Blog::find(1)->tags;
+        Log::info($blog);
+        $this->assertInstanceOf(Collection::class,$blog);
     }
 }

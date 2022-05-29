@@ -16,7 +16,7 @@ class Blog extends Model
     use SoftDeletes;
 
     protected $guarded = ['id'];
-    public $timestamp = false;
+    // public $timestamp = false;
 
     public function category()
     {
@@ -26,6 +26,11 @@ class Blog extends Model
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id', 'id');
+    }
+
+    public function tags()
+    {
+        return $this->belongsToMany(Tag::class,'blogs_tags','blog_id','tag_id');
     }
 
 
@@ -45,11 +50,11 @@ class Blog extends Model
         }
     }
 
-    public function getBlogsWithCategory()
+    public function getBlogsWithCategoryAndTags()
     {
         try {
 
-            return $this->with('category')->get()->toJson(JSON_UNESCAPED_UNICODE);
+            return $this->with('category')->with('tags')->get()->toJson(JSON_UNESCAPED_UNICODE);
         } catch (Exception $e) {
             Log::emergency($e->getMessage());
             throw $e;

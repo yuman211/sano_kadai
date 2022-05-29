@@ -26,7 +26,7 @@ class BlogController extends Controller
     {
         try {
 
-            return $blog->getBlogsWithCategory();
+            return $blog->getBlogsWithCategoryAndTags();
         } catch (Exception $e) {
             Log::emergency($e->getMessage());
             return $e;
@@ -51,7 +51,7 @@ class BlogController extends Controller
         try {
             $blog_id = $request->input('id');
             $blog_user_id = $blog->find($blog_id)->user_id;
-            
+
             $user_id = Auth::id();
 
             $findWho = $blog->findWho($user_id, $blog_user_id);
