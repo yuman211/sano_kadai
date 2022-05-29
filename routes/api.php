@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\BlogController;
+use App\Http\Controllers\CategoryController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\JWTController;
@@ -15,6 +16,7 @@ Route::group(['middleware' => 'api'], function ($router) {
 
 Route::get('/blog_list/{id?}', [BlogController::class, 'showBlogs']);
 Route::get('/blog_category_list', [BlogController::class, 'showBlogsWithCategory']);
+Route::get('/search_blogs_category', [CategoryController::class, 'searchBlogsByCategory']);
 
 Route::middleware('auth')->group(function () {
     Route::post('/blog/create', [BlogController::class, 'createBlogs']);
