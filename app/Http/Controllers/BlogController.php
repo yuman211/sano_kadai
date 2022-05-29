@@ -7,12 +7,17 @@ use App\Models\Blog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Exception;
+
+use Illuminate\Notifications\Notifiable;
+use App\Notifications\SlackNotification;
+
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 
 class BlogController extends Controller
 {
+    use Notifiable;
     public function showBlogs(Blog $blog, $id = null)
     {
         try {
@@ -54,6 +59,10 @@ class BlogController extends Controller
             }
 
             DB::commit();
+            //slack通知
+            $title = $request->input('title');
+            $this->notify(new SlackNotification($title));
+
             return '登録しました';
         } catch (Exception $e) {
             DB::rollback();
@@ -100,5 +109,11 @@ class BlogController extends Controller
             Log::emergency($e->getCode());
             return $e;
         }
+
+    }
+
+    public function routeNotificationForSlack($notification)
+    {
+        return config('app.slack_url');
     }
 }
