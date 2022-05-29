@@ -20,6 +20,9 @@ return new class extends Migration
             $table->string('title');
             $table->integer('price');
             $table->string('content');
+            $table->softDeletes();
+            $table->dateTime('updated_at')->useCurrent()->nullable();
+            $table->dateTime('created_at')->useCurrent()->nullable();
 
         });
     }

@@ -13,4 +13,11 @@ Route::group(['middleware' => 'api'], function ($router) {
     Route::post('/profile', [JWTController::class, 'profile']);
 });
 
-Route::get('/blog_list/{id?}',[BlogController::class,'showBlogs']);
+Route::get('/blog_list/{id?}', [BlogController::class, 'showBlogs']);
+Route::get('/blog_category_list', [BlogController::class, 'showBlogsWithCategory']);
+
+Route::middleware('auth')->group(function () {
+    Route::post('/blog/create', [BlogController::class, 'createBlogs']);
+    Route::post('/blog/edit', [BlogController::class, 'editBlogs']);
+    Route::post('/blog/delete', [BlogController::class, 'deleteBlogs']);
+});
