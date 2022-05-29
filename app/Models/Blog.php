@@ -8,7 +8,9 @@ use Illuminate\Support\Facades\Log;
 use Exception;
 use App\Models\User;
 use App\Models\Category;
+use App\Models\Tag;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Arr;
 
 class Blog extends Model
 {
@@ -30,7 +32,7 @@ class Blog extends Model
 
     public function tags()
     {
-        return $this->belongsToMany(Tag::class,'blogs_tags','blog_id','tag_id');
+        return $this->belongsToMany(Tag::class, 'blogs_tags', 'blog_id', 'tag_id');
     }
 
 
@@ -61,10 +63,10 @@ class Blog extends Model
         }
     }
 
-    public function insertBlog($postData, $user_id)
+    public function createBlog($postData, $user_id)
     {
         try {
-            $this->insert(
+            $created_blog = $this->create(
                 [
                     'user_id' => $user_id,
                     'category_id' => $postData['category_id'],
@@ -73,6 +75,7 @@ class Blog extends Model
                     'content' => $postData['content']
                 ]
             );
+            return $created_blog;
         } catch (Exception $e) {
             Log::emergency($e->getMessage());
             throw $e;
@@ -89,7 +92,7 @@ class Blog extends Model
         }
     }
 
-    public function updateBlog($blog_id,$postData,$user_id)
+    public function updateBlog($blog_id, $postData, $user_id)
     {
         try {
             $this->where('user_id', '=', $user_id)->where('id', '=', $blog_id)->update($postData);
@@ -99,13 +102,36 @@ class Blog extends Model
         }
     }
 
-    public function findWho($user_id,$blog_id)
+    public function findWho($user_id, $blog_id)
     {
-        if($user_id === $blog_id)
-        {
+        if ($user_id === $blog_id) {
             return true;
-        }else{
+        } else {
             return false;
+        }
+    }
+
+    public function createTags($input_tag)
+    {
+        $tag_ids = [];
+        $tags = Arr::except(explode('#', $input_tag),[0]);
+        foreach ($tags as $tag) {
+            $tag = Tag::updateOrCreate(
+                [
+                    'name' => $tag,
+                ]
+            );
+            $tag_ids[] = $tag->id;
+        }
+        return $tag_ids;
+
+    }
+
+    public function insertBlogsTagsTable($blog_id, $tag_ids)
+    {
+        foreach($tag_ids as $tag_id)
+        {
+            $this->find($blog_id)->tags()->syncWithoutDetaching($tag_id);
         }
     }
 }

@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Exception;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
 
 class BlogController extends Controller
 {
@@ -36,11 +38,25 @@ class BlogController extends Controller
     public function createBlogs(CreateBlogRequest $request, Blog $blog)
     {
         try {
+            DB::beginTransaction();
+
             $user_id = Auth::id();
             $postData = $request->only(['category_id', 'title', 'price', 'content']);
-            $blog->insertBlog($postData, $user_id);
+            $input_tag = $request->input('tags');
+
+            $created_blog = $blog->createBlog($postData, $user_id);
+            $blog_id = $created_blog->id;
+            if (isset($input_tag)) {
+                $tag_ids = $blog->createTags($input_tag);
+
+                //中間テーブルに挿入
+                $blog->insertBlogsTagsTable($blog_id,$tag_ids);
+            }
+
+            DB::commit();
             return '登録しました';
         } catch (Exception $e) {
+            DB::rollback();
             Log::emergency($e->getMessage());
             return $e;
         }
@@ -76,7 +92,7 @@ class BlogController extends Controller
 
             $findWho = $blog->findWho($user_id, $blog_id);
             if (!$findWho) {
-                return response()->json(['error' => 'エラーです'],403);
+                return response()->json(['error' => 'エラーです'], 403);
             }
             $blog->updateBlog($blog_id, $postData, $user_id);
             return '更新しました';
