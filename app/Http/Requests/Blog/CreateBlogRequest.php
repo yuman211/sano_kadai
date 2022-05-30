@@ -34,6 +34,20 @@ class CreateBlogRequest extends FormRequest
         ];
     }
 
+
+    public function messages()
+    {
+        return [
+            'category_id.required' => 'カテゴリーを入力してください。', //入力が無かった場合のエラー文
+            'title.required' => 'タイトルを入力してください。',
+            'title.max' => 'タイトルは20文字以内で入力してください。',
+            'price.required' => '価格を入力してください。',
+            'price.numeric' => '価格は数字で入力してください。',
+            'content.required' => '内容を入力してください',
+            'content.min' => '内容は５文字以上で入力してください。',
+        ];
+    }
+
     /**
      * バリデーションエラーが起きたら実行される
      *
