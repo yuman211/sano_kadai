@@ -4,7 +4,7 @@ namespace Tests;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
-
+use Illuminate\Support\Facades\Log;
 abstract class TestCase extends BaseTestCase
 {
     use CreatesApplication;
@@ -26,7 +26,6 @@ abstract class TestCase extends BaseTestCase
         $user = User::factory()->create($dbData);
 
         $this->postJson('api/login', $postData);
-
         return $user;
     }
 }
